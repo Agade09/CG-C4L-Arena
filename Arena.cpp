@@ -331,12 +331,15 @@ inline bool All_Dead(const array<AI,N> &Bot)noexcept{
     return true;
 }
 
-action StringToAction(const state &S,const string &M_Str){
+action StringToAction(const state &S,const string &M_Str,const int id){
     action M;
     stringstream ss(M_Str);
     string type;
     ss >> type;
-    if(type=="GOTO"){
+    if(type=="WAIT"){
+        M=action{GOTO,S.P[id].r};
+    }
+    else if(type=="GOTO"){
         string destination;
         ss >> destination;
         if(StrToLocation.find(destination)==StrToLocation.end()){//Invalid destination
@@ -548,7 +551,7 @@ int Play_Game(const array<string,N> &Bot_Names,state &S){
                     Bot[i].Feed_Inputs(ss.str());
                     string out=GetMove(S,Bot[i],turn);
                     //cerr << i << " " << out << endl;
-                    M[i]=StringToAction(S,out);
+                    M[i]=StringToAction(S,out,i);
                 }
                 catch(int ex){
                     if(ex==1){//Timeout
